@@ -13,9 +13,10 @@ type Router struct{
 func NewRouter() *Router{
 	router := gin.Default()
 
+	helper := handlers.New()
 	householdAPI := router.Group("/household")
 	// 1. Create Household
-	householdAPI.POST("/create", handlers.CreateHousehold)
+	householdAPI.POST("/create", helper.CreateHousehold)
 	// 2. Add family member
 	householdAPI.POST("/add_family_member", handlers.AddFamilyMember)
 	// 3. List house hold

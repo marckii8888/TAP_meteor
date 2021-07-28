@@ -1,23 +1,50 @@
 package internal
 
-import "meteor/enum"
+import (
+	"gorm.io/gorm"
+	"meteor/enum"
+)
 
 type Household struct {
-	HousingType enum.HouseholdType
-	FamilyMembers []*FamilyMember
+	ID uint64 `json:"id"`
+	HousingType enum.HouseholdType `json:"housing_type"`
+	FamilyMembers []*FamilyMember `json:"family_members,omitempty" gorm:"-"`
 }
 
-func (Household *Household) Create(housingType enum.HouseholdType) error {
+type CreateHouseholdReq struct {
+	Households []Household `json:"households"`
+}
+
+func Create(db *gorm.DB, housingType enum.HouseholdType) error {
 	// Create Household here
+	newHousehold := &Household{
+		HousingType: housingType,
+	}
+	err := db.Create(newHousehold).Error
+	if err != nil{
+		return err
+	}
 	return nil
 }
 
-func QueryHouseholds() []*Household {
-	// Query all households
-	return []*Household{}
+func QueryHouseholds(db *gorm.DB) error {
+	var ret []*Household
+	err := db.Find(ret).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func QueryUniqueHousehold(MemberName string, HousingType enum.HouseholdType) *Household{
+	//get user by id
+	//func GetUser(db *gorm.DB, User *User, id string) (err error) {
+	//	err = db.Where("id = ?", id).First(User).Error
+	//	if err != nil {
+	//		return err
+	//	}
+	//	return nil
+	//}
 	return &Household{}
 }
 
