@@ -17,6 +17,7 @@ type FamilyMember struct {
 	AnnualIncome float64 `json:"annual_income"`
 	DOB string `json:"dob"`
 }
+
 // TODO: Check if marital status must not have spouse
 func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
 	// Check if household exists
