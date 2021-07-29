@@ -29,7 +29,7 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 	    ]
 	}
 	*/
-	var req internal.CreateHouseholdReq
+	var req internal.HouseholdReq
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.JSON(404, gin.H{
 			"message" : fmt.Sprintf("Error: %+v", err),
@@ -52,6 +52,18 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 }
 
 func (helper *Helper)AddFamilyMember(c *gin.Context){
+	/*
+	{
+	     "household_id" : 3,
+	     "name" : "Bobby",
+	     "gender" : "MALE",
+	     "marital_status" : "SINGLE",
+	     "spouse" : "Alice",
+	     "occupation_type" : "STUDENT",
+	     "annual_income" : 1000.0,
+	     "dob" : "08-08-1997"
+	}
+	*/
 	var req *internal.FamilyMember
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -73,9 +85,19 @@ func (helper *Helper)AddFamilyMember(c *gin.Context){
 	})
 }
 
-func ListAllHouseholds(c *gin.Context){
+// ListAllHouseholds
+// @Summary List all the households in the database
+func (helper *Helper) ListAllHouseholds(c *gin.Context){
+	var ret []internal.Household
+	err := internal.QueryHouseholds(helper.db, &ret)
+	if err != nil{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"message": "Listing all household",
+		"message": ret,
 	})
 }
 

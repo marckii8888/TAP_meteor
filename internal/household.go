@@ -11,7 +11,7 @@ type Household struct {
 	FamilyMembers []*FamilyMember `json:"family_members,omitempty" gorm:"-"`
 }
 
-type CreateHouseholdReq struct {
+type HouseholdReq struct {
 	Households []Household `json:"households"`
 }
 
@@ -27,9 +27,8 @@ func Create(db *gorm.DB, housingType enum.HouseholdType) error {
 	return nil
 }
 
-func QueryHouseholds(db *gorm.DB) error {
-	var ret []*Household
-	err := db.Find(ret).Error
+func QueryHouseholds(db *gorm.DB, households *[]Household) error {
+	err := db.Find(households).Error
 	if err != nil {
 		return err
 	}
