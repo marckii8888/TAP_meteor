@@ -18,7 +18,7 @@ func NewRouter() *Router{
 	// 1. Create Household
 	householdAPI.POST("/create", helper.CreateHousehold)
 	// 2. Add family member
-	householdAPI.POST("/add_family_member", handlers.AddFamilyMember)
+	householdAPI.POST("/add_family_member", helper.AddFamilyMember)
 	// 3. List house hold
 	householdAPI.GET("/list_households", handlers.ListAllHouseholds)
 	// 4. Show selected house hold

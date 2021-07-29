@@ -48,3 +48,12 @@ func QueryUniqueHousehold(MemberName string, HousingType enum.HouseholdType) *Ho
 	return &Household{}
 }
 
+func QueryHouseholdById(db *gorm.DB, id string) error {
+	var ret *Household
+	err := db.Where("id = ?", id).First(&ret).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
