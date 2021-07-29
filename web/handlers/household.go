@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -101,8 +102,45 @@ func (helper *Helper) ListAllHouseholds(c *gin.Context){
 	})
 }
 
-func QueryHouseHold(c *gin.Context){
+// QueryHousehold
+// @Summary List details of a specific household
+// url: GET http://localhost:8081/household/query_household?id=1
+func (helper *Helper) QueryHousehold(c *gin.Context){
+	id := c.Query("id")
+	var ret internal.Household
+	err := internal.QueryUniqueHousehold(helper.db, &ret, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If record does not exists
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error" : fmt.Sprintf("Error - %+v", err),
+			})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+	}
+
+	// Query family members base on household
+	var familyMembers []internal.FamilyMember
+	err = internal.QueryFamilyMembers(helper.db, &familyMembers, ret.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If record does not exists
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error" : fmt.Sprintf("Error - %+v", err),
+			})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+	}
+
+	ret.FamilyMembers = familyMembers
+
 	c.JSON(200, gin.H{
-		"message": "Querying a household",
+		"message": ret,
 	})
 }

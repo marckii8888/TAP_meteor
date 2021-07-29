@@ -22,7 +22,7 @@ func NewRouter() *Router{
 	// 3. List house hold
 	householdAPI.GET("/list_households", helper.ListAllHouseholds)
 	// 4. Show selected house hold
-	householdAPI.GET("/query_household", handlers.QueryHouseHold)
+	householdAPI.GET("/query_household", helper.QueryHousehold)
 	// 5. Search for households and recipients **
 	// ** To be done
 

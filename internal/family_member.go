@@ -35,4 +35,14 @@ func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
 	return nil
 }
 
+func QueryFamilyMembers(db *gorm.DB, members *[]FamilyMember, householdId uint64) error {
+	ids := []uint64{householdId}
+	err := db.Where("household_id = ?", ids).Find(members).Error
+	//err := db.First(&members, householdId).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 
