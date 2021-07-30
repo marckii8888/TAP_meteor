@@ -8,7 +8,7 @@ import (
 type Household struct {
 	ID uint64 `json:"id"`
 	HousingType enum.HouseholdType `json:"housing_type"`
-	FamilyMembers []*FamilyMember `json:"family_members,omitempty" gorm:"-"`
+	FamilyMembers []FamilyMember `json:"family_members,omitempty" gorm:"-"`
 }
 
 type HouseholdReq struct {
@@ -35,16 +35,12 @@ func QueryHouseholds(db *gorm.DB, households *[]Household) error {
 	return nil
 }
 
-func QueryUniqueHousehold(MemberName string, HousingType enum.HouseholdType) *Household{
-	//get user by id
-	//func GetUser(db *gorm.DB, User *User, id string) (err error) {
-	//	err = db.Where("id = ?", id).First(User).Error
-	//	if err != nil {
-	//		return err
-	//	}
-	//	return nil
-	//}
-	return &Household{}
+func QueryUniqueHousehold(db *gorm.DB, household *Household, id string) error{
+	err := db.Where("id = ?", id).First(household).Error
+	if err != nil{
+		return err
+	}
+	return nil
 }
 
 func QueryHouseholdById(db *gorm.DB, id string) error {

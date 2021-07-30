@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
 	"meteor/internal"
 	"net/http"
+	"strconv"
 )
 
 type Helper struct{
@@ -51,6 +53,8 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 	})
 }
 
+// AddFamilyMember
+// url http://localhost:8081/household/add_family_member
 func (helper *Helper)AddFamilyMember(c *gin.Context){
 	/*
 	{
@@ -101,8 +105,103 @@ func (helper *Helper) ListAllHouseholds(c *gin.Context){
 	})
 }
 
-func QueryHouseHold(c *gin.Context){
+// QueryHousehold
+// @Summary List details of a specific household
+// url: GET http://localhost:8081/household/query_household?id=1
+func (helper *Helper) QueryHousehold(c *gin.Context){
+	id := c.Query("id")
+	var ret internal.Household
+	err := internal.QueryUniqueHousehold(helper.db, &ret, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If record does not exists
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error" : fmt.Sprintf("Error - %+v", err),
+			})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+	}
+
+	// Query family members base on household
+	var familyMembers []internal.FamilyMember
+	err = internal.QueryFamilyMembers(helper.db, &familyMembers, ret.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If record does not exists
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error" : fmt.Sprintf("Error - %+v", err),
+			})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+	}
+
+	ret.FamilyMembers = familyMembers
+
 	c.JSON(200, gin.H{
-		"message": "Querying a household",
+		"message": ret,
 	})
+}
+
+// QueryHouseholdsGrantEligibility
+// @Summary
+// url: http://localhost:8081/grants/list_eligible_households?household_size=2&total_income=1000
+func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
+	householdSize := c.Query("household_size")
+	totalIncome := c.Query("total_income")
+
+	// Convert householdSize and totalIncome to int and float64 respectively
+	householdSizeInt, _ := strconv.Atoi(householdSize)
+	totalIncomeFloat, _ :=  strconv.ParseFloat(totalIncome, 64)
+
+	fmt.Printf("Household int = %+v, household str = %+v income float = %+v income str = %+v", householdSizeInt, householdSize, totalIncomeFloat, totalIncome)
+	// First find all the household
+	var households []internal.Household
+	err := internal.QueryHouseholds(helper.db, &households)
+
+	if err != nil{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
+
+	var resp internal.TotalGrantResp
+	for _, household := range households{
+		err = internal.QueryFamilyMembers(helper.db, &household.FamilyMembers, household.ID)
+		// Filter based on family members
+		if len(household.FamilyMembers) != householdSizeInt && householdSizeInt != 0{
+			continue
+		}
+
+		// Filter base on household income
+		if !internal.CheckTotalIncome(household, totalIncomeFloat) && totalIncomeFloat != 0.0 {
+			continue
+		}
+
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// If record does not exists
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"error" : fmt.Sprintf("Error - %+v", err),
+				})
+				return
+			}
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"error" : fmt.Sprintf("Error - %+v", err),
+			})
+		}
+		// Check eligibility here
+		internal.IsEligible(&resp, household)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message" : resp,
+	})
+
 }

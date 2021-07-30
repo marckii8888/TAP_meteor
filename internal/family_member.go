@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"meteor/enum"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type FamilyMember struct {
@@ -19,6 +22,7 @@ type FamilyMember struct {
 }
 
 // TODO: Check if marital status must not have spouse
+// TODO: Check DOB is correct
 func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
 	// Check if household exists
 	err := QueryHouseholdById(db, fmt.Sprintf("%+v",newMember.HouseholdID))
@@ -33,6 +37,24 @@ func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
 		return err
 	}
 	return nil
+}
+
+func QueryFamilyMembers(db *gorm.DB, members *[]FamilyMember, householdId uint64) error {
+	ids := []uint64{householdId}
+	err := db.Where("household_id = ?", ids).Find(members).Error
+	//err := db.First(&members, householdId).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CalculateAge(dob string) uint64{
+	dobSlice := strings.Split(dob, "-")
+	birthYear := dobSlice[2]
+	birthYearInt, _ := strconv.Atoi(birthYear)
+	year, _, _ := time.Now().Date()
+	return uint64(year - birthYearInt)
 }
 
 
