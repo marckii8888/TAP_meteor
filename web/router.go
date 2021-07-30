@@ -27,7 +27,7 @@ func NewRouter() *Router{
 	// 6. [OPTIONAL] Delete Household
 	householdAPI.DELETE("/delete_household", helper.DeleteHousehold)
 	// 7. [OPTIONAL] Delete family member
-	householdAPI.DELETE("/delete_member", helper.DeleteMember)
+	//householdAPI.DELETE("/delete_member", helper.DeleteFamilyMember)
 
 	// 5. Search for households and recipients **
 	grantAPI := router.Group("/grants")

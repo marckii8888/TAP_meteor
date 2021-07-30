@@ -36,7 +36,7 @@ func isMaritalStatusValid(member *FamilyMember) bool {
 
 	return true
 }
-// TODO: Check if marital status must not have spouse
+
 func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
 	// Check if DOB is formatted correctly
 	if !isDOBValid(newMember.DOB) { return fmt.Errorf("Invalid date of birth format. Should be DD-MM-YYYY")}
@@ -77,4 +77,19 @@ func CalculateAge(dob string) uint64{
 	return uint64(year - birthYearInt)
 }
 
+func DeleteFamilyMember(db *gorm.DB, member *FamilyMember, id string) error {
+	err := db.Where("id = ?", id).Delete(member).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
+
+func DeleteFamilyMemberFromHousehold(db *gorm.DB, member *FamilyMember, id string) error {
+	err := db.Where("household_id = ?", id).Delete(member).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
