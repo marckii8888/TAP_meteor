@@ -21,9 +21,29 @@ type FamilyMember struct {
 	DOB string `json:"dob"`
 }
 
+func isDOBValid(dob string) bool {
+	_, err := time.Parse("02-01-2006", dob)
+	if err != nil { return false }
+	return true
+}
+
+func isMaritalStatusValid(member *FamilyMember) bool {
+	if member.MaritalStatus == enum.Married {
+		if member.Spouse == "" { return false }
+	}
+	// If not married, should not have spouse
+	if member.Spouse != "" { return false }
+
+	return true
+}
 // TODO: Check if marital status must not have spouse
-// TODO: Check DOB is correct
 func AddFamilyMember(db *gorm.DB, newMember *FamilyMember) error {
+	// Check if DOB is formatted correctly
+	if !isDOBValid(newMember.DOB) { return fmt.Errorf("Invalid date of birth format. Should be DD-MM-YYYY")}
+
+	// Check if martial status does not contradicts
+	if !isMaritalStatusValid(newMember) { return fmt.Errorf("Contradiction in marital status.")}
+
 	// Check if household exists
 	err := QueryHouseholdById(db, fmt.Sprintf("%+v",newMember.HouseholdID))
 	if err != nil {
