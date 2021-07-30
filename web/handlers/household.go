@@ -159,7 +159,6 @@ func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
 	householdSizeInt, _ := strconv.Atoi(householdSize)
 	totalIncomeFloat, _ :=  strconv.ParseFloat(totalIncome, 64)
 
-	fmt.Printf("Household int = %+v, household str = %+v income float = %+v income str = %+v", householdSizeInt, householdSize, totalIncomeFloat, totalIncome)
 	// First find all the household
 	var households []internal.Household
 	err := internal.QueryHouseholds(helper.db, &households)
@@ -202,5 +201,33 @@ func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
 
 	c.JSON(http.StatusOK, gin.H{
 		"message" : resp,
+	})
+}
+
+func (helper *Helper) DeleteHousehold(c *gin.Context){
+	id := c.Query("id")
+	var ret internal.Household
+	var member internal.FamilyMember
+
+	// Delete all family members
+	err := internal.DeleteFamilyMemberFromHousehold(helper.db, &member, fmt.Sprintf("%+v", id))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
+
+	// Delete household
+	err = internal.DeleteHousehold(helper.db, &ret, fmt.Sprintf("%+v", id))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message" : "Household deleted",
 	})
 }

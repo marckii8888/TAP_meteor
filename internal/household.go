@@ -52,3 +52,11 @@ func QueryHouseholdById(db *gorm.DB, id string) error {
 	return nil
 }
 
+func DeleteHousehold(db *gorm.DB, household *Household, id string) error {
+	err := db.Where("id = ?", id).Delete(household).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
