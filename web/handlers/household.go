@@ -231,3 +231,20 @@ func (helper *Helper) DeleteHousehold(c *gin.Context){
 		"message" : "Household deleted",
 	})
 }
+
+func (helper *Helper) DeleteMember(c *gin.Context){
+	id := c.Query("id")
+	var member internal.FamilyMember
+
+	err := internal.DeleteFamilyMember(helper.db, &member, fmt.Sprintf("%+v", id))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message" : "Family member deleted",
+	})
+}
