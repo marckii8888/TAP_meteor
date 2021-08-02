@@ -21,16 +21,11 @@ func New() *Helper{
 	return &Helper{db : db}
 }
 
+// CreateHousehold
+// @Summary Handler to create a new household
+// Expected JSON POST request:  {"households":[{"housing_type":"HDB"}]}
+// Endpoint: http://localhost:8081/household/create
 func (helper *Helper)CreateHousehold(c *gin.Context){
-	/*
-	{
-	    "households" : [
-	        {
-	            "housing_type" : "HDB"
-	        }
-	    ]
-	}
-	*/
 	var req internal.HouseholdReq
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.JSON(404, gin.H{
@@ -47,6 +42,7 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 		return
 	}
 	for _, household := range req.Households{
+		// Create the household
 		err := internal.Create(helper.db, household.HousingType)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -61,20 +57,11 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 }
 
 // AddFamilyMember
-// url http://localhost:8081/household/add_family_member
+// @Summary Handler function to add a family member to the household
+// Expected JSON POST request: {"household_id" : 3, "name" : "Bobby", "gender" : "MALE",
+// "marital_status" : "SINGLE", "spouse" : "Alice","occupation_type" : "STUDENT", "annual_income" : 1000.0,"dob" : "08-08-1997"}
+// Endpoint: http://localhost:8081/household/add_family_member
 func (helper *Helper)AddFamilyMember(c *gin.Context){
-	/*
-	{
-	     "household_id" : 3,
-	     "name" : "Bobby",
-	     "gender" : "MALE",
-	     "marital_status" : "SINGLE",
-	     "spouse" : "Alice",
-	     "occupation_type" : "STUDENT",
-	     "annual_income" : 1000.0,
-	     "dob" : "08-08-1997"
-	}
-	*/
 	var req *internal.FamilyMember
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -106,6 +93,7 @@ func (helper *Helper)AddFamilyMember(c *gin.Context){
 
 // ListAllHouseholds
 // @Summary List all the households in the database
+// Endpoint: http://localhost:8081/household/list_households
 func (helper *Helper) ListAllHouseholds(c *gin.Context){
 	var ret []internal.Household
 	err := internal.QueryHouseholds(helper.db, &ret)
@@ -122,7 +110,7 @@ func (helper *Helper) ListAllHouseholds(c *gin.Context){
 
 // QueryHousehold
 // @Summary List details of a specific household
-// url: GET http://localhost:8081/household/query_household?id=1
+// Endpoint: http://localhost:8081/household/query_household?id=1
 func (helper *Helper) QueryHousehold(c *gin.Context){
 	id := c.Query("id")
 	var ret internal.Household
@@ -155,17 +143,15 @@ func (helper *Helper) QueryHousehold(c *gin.Context){
 			"error" : fmt.Sprintf("Error - %+v", err),
 		})
 	}
-
 	ret.FamilyMembers = familyMembers
-
 	c.JSON(200, gin.H{
 		"message": ret,
 	})
 }
 
 // QueryHouseholdsGrantEligibility
-// @Summary
-// url: http://localhost:8081/grants/list_eligible_households?household_size=2&total_income=1000
+// @Summary Query the database and filter out which household is eligible for which grant
+// Endpoint http://localhost:8081/grants/list_eligible_households?household_size=2&total_income=1000
 func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
 	householdSize := c.Query("household_size")
 	totalIncome := c.Query("total_income")
@@ -219,14 +205,15 @@ func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
 	})
 }
 
+// DeleteHousehold
+// @Summary Handler function to delete a household
+// Endpoint: http://localhost:8081/household/delete_household/10
 func (helper *Helper) DeleteHousehold(c *gin.Context){
-	//id := c.Query("id")
 	id, _ := c.Params.Get("house_id")
-	fmt.Println(id)
 	var ret internal.Household
 	var member internal.FamilyMember
 
-	// Delete all family members
+	// Delete all family members from the household
 	err := internal.DeleteFamilyMemberFromHousehold(helper.db, &member, fmt.Sprintf("%+v", id))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -249,6 +236,9 @@ func (helper *Helper) DeleteHousehold(c *gin.Context){
 	})
 }
 
+// DeleteMember
+// @Summary Delete a specific member from the database
+// Endpoint "http://localhost:8081/household/delete_member/8"
 func (helper *Helper) DeleteMember(c *gin.Context){
 	id, _ := c.Params.Get("member_id")
 	var member internal.FamilyMember

@@ -15,6 +15,8 @@ type GrantResp struct {
 	EligibleFamilyMembers []FamilyMember `json:"eligible_family_members"`
 }
 
+// IsEligible
+// @Summary Check which grant a given household is eligible for
 func IsEligible(resp *TotalGrantResp, household Household) {
 	ok, res := isEligibleForStudentEncouragement(household)
 	// If household / members eligible for student encouragement bonus
@@ -47,10 +49,12 @@ func IsEligible(resp *TotalGrantResp, household Household) {
 	}
 }
 
+// isEligibleForStudentEncouragement
+// @Summary Checks if a household is eligible for Student Encouragement Bonus
+// Criteria:
+// 1. Household must have children < 16 y.o
+// 2. Household income < 150 000
 func isEligibleForStudentEncouragement(household Household) (bool, GrantResp){
-	// List households and family members for student encouragement bonuses
-	// Household must have children < 16 y.o
-	// House hold income < 150 000
 	var resp GrantResp
 	totalIncome := 0.0
 	eligible := false
@@ -74,9 +78,12 @@ func isEligibleForStudentEncouragement(household Household) (bool, GrantResp){
 	return eligible, resp
 }
 
+// isEligibleForFamilyScheme
+// @Summary Checks if a household is eligible for Family Togetherness Scheme
+// Criteria:
+// 1. Household must have husband and wife
+// 2. Household must have child(ren) > 18 y.o
 func isEligibleForFamilyScheme(household Household) (bool, GrantResp){
-	// Households with husband & wife
-	// Has child(ren) younger than 18 years old.
 	haveSpouse := false
 	haveChild := false
 	spouseMap := make(map[string]FamilyMember)
@@ -112,12 +119,16 @@ func isEligibleForFamilyScheme(household Household) (bool, GrantResp){
 	return false, GrantResp{}
 }
 
+// isEligibleForElderBonus
+// @Summary Checks if a household is eligible for Elder Bonus
+// Criteria:
+// 1. Household must have member > 50 y.o
 func isEligibleForElderBonus(household Household) (bool, GrantResp){
-	// HDB members over 50 y.o
 	var resp GrantResp
 	eligible := false
 	for _, member := range household.FamilyMembers{
 		age := CalculateAge(member.DOB)
+		// Check if member age is > 50
 		if age > 50 {
 			eligible = true
 			resp.EligibleFamilyMembers = append(resp.EligibleFamilyMembers, member)
@@ -130,6 +141,10 @@ func isEligibleForElderBonus(household Household) (bool, GrantResp){
 	return false, GrantResp{}
 }
 
+// isEligibleForBabySunshine
+// @Summary Checks if a household is eligible for Baby Sunshine Grant
+// Criteria
+// 1. Have children < 5 y.o
 func isEligibleForBabySunshine(household Household) (bool, GrantResp){
 	// Children younger than 5
 	var resp GrantResp
@@ -150,6 +165,10 @@ func isEligibleForBabySunshine(household Household) (bool, GrantResp){
 	return true, GrantResp{}
 }
 
+// isEligibleForYolo
+// @Summary Checks if household is eligible for YOLO GST Grant
+// Criteria:
+// 1. Household with annual income < 100 000
 func isEligibleForYolo(household Household) (bool, GrantResp){
 	// Annual income less than $100 000
 	var resp GrantResp
@@ -158,6 +177,7 @@ func isEligibleForYolo(household Household) (bool, GrantResp){
 	for _, member := range household.FamilyMembers{
 		totalIncome += member.AnnualIncome
 	}
+	// Check if total household income < 100,000
 	if totalIncome < 100000.0{
 		eligible = true
 		resp.HouseHold = household
@@ -165,6 +185,9 @@ func isEligibleForYolo(household Household) (bool, GrantResp){
 	return eligible, resp
 }
 
+// CheckTotalIncome
+// @Summary check if household total income equals to query parameters.
+// This is to filter households with annual income != query income
 func CheckTotalIncome(household Household, query float64) bool {
 	totalIncome := 0.0
 	for _, member := range household.FamilyMembers {

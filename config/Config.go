@@ -22,6 +22,9 @@ type Config struct {
 
 var Conf *Config
 
+// @InitConf
+// @Summary Read from config.yml and initialise the respective fields in
+// Config struct
 func InitConf(){
 	f, err := os.Open("./config/config.yml")
 	if err != nil {

@@ -15,8 +15,9 @@ type HouseholdReq struct {
 	Households []Household `json:"households"`
 }
 
+// Create
+// @Summary Function to add a new household to the database
 func Create(db *gorm.DB, housingType enum.HouseholdType) error {
-	// Create Household here
 	newHousehold := &Household{
 		HousingType: housingType,
 	}
@@ -27,6 +28,8 @@ func Create(db *gorm.DB, housingType enum.HouseholdType) error {
 	return nil
 }
 
+// QueryHouseholds
+// @Summary Get all households from the database
 func QueryHouseholds(db *gorm.DB, households *[]Household) error {
 	err := db.Find(households).Error
 	if err != nil {
@@ -35,6 +38,8 @@ func QueryHouseholds(db *gorm.DB, households *[]Household) error {
 	return nil
 }
 
+// QueryUniqueHousehold
+// @Summary Retrieve a unique household given the household id
 func QueryUniqueHousehold(db *gorm.DB, household *Household, id string) error{
 	err := db.Where("id = ?", id).First(household).Error
 	if err != nil{
@@ -43,6 +48,8 @@ func QueryUniqueHousehold(db *gorm.DB, household *Household, id string) error{
 	return nil
 }
 
+// QueryHouseholdById
+// @Summary Checks if a household exists in the database
 func QueryHouseholdById(db *gorm.DB, id string) error {
 	var ret *Household
 	err := db.Where("id = ?", id).First(&ret).Error
@@ -52,6 +59,8 @@ func QueryHouseholdById(db *gorm.DB, id string) error {
 	return nil
 }
 
+// DeleteHousehold
+// @Summary Delete a household from the database given the household id
 func DeleteHousehold(db *gorm.DB, household *Household, id string) error {
 	err := db.Where("id = ?", id).Delete(household).Error
 	if err != nil {
@@ -60,6 +69,8 @@ func DeleteHousehold(db *gorm.DB, household *Household, id string) error {
 	return nil
 }
 
+// IsReqValid
+// @Summary Checks if the housing_type field in HouseholdReq struct is valid
 func IsReqValid(req HouseholdReq) bool {
 	// Check if household type is valid enum
 	for _, household := range req.Households{
