@@ -50,8 +50,8 @@ go run main.go
     curl -L -X POST "http://localhost:8081/household/add_family_member" -H "Content-Type: application/json" --data-raw "{\"household_id\" : 4, \"name\" : \"Bobby\", \"gender\" : \"MALE\", \"marital_status\" : \"MARRIED\", \"spouse\" : \"Alice\", \"occupation_type\" : \"STUDENT\", \"annual_income\" : 1000.0, \"dob\" : \"08-08-1997\"}"
 
 `Possible "gender" fields: "MALE", "FEMALE"`
-`Possible "marital_status" fields: "HDB", "LANDED", "CONDOMINIUM"`
-`Possible "occupation_type" fields: "HDB", "LANDED", "CONDOMINIUM"`
+`Possible "marital_status" fields: "SINGLE", "MARRIED"`
+`Possible "occupation_type" fields: "EMPLOYED", "UNEMPLOYED", "STUDENT"`
 
 ### Response
 
