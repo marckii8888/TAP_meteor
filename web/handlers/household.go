@@ -34,7 +34,7 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 	var req internal.HouseholdReq
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.JSON(404, gin.H{
-			"message" : fmt.Sprintf("Error: %+v", err),
+			"message" : fmt.Sprintf("Error: %+v... req = %+v", err, req),
 		})
 		return
 	}
@@ -49,7 +49,7 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 		}
 	}
 	c.JSON(200, gin.H{
-		"message" : "Done",
+		"message" : "Household created",
 	})
 }
 
@@ -205,7 +205,9 @@ func (helper *Helper) QueryHouseholdsGrantEligibility(c *gin.Context){
 }
 
 func (helper *Helper) DeleteHousehold(c *gin.Context){
-	id := c.Query("id")
+	//id := c.Query("id")
+	id, _ := c.Params.Get("house_id")
+	fmt.Println(id)
 	var ret internal.Household
 	var member internal.FamilyMember
 
@@ -233,7 +235,7 @@ func (helper *Helper) DeleteHousehold(c *gin.Context){
 }
 
 func (helper *Helper) DeleteMember(c *gin.Context){
-	id := c.Query("id")
+	id, _ := c.Params.Get("member_id")
 	var member internal.FamilyMember
 
 	err := internal.DeleteFamilyMember(helper.db, &member, fmt.Sprintf("%+v", id))
