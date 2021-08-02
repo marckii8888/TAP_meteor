@@ -24,7 +24,12 @@ To run the URL Shortener, the following
 cd config
 ```
 Open config.yml in a text editor and change the values of MySQL credentials
-### 2. Install the dependencies and start the backend server
+
+### 2. Run the MySQL script to create database and populate database
+```sh
+mysql -u root -p < script.sql
+```
+### 3. Install the dependencies and start the backend server
 ```sh
 go mod tidy
 go run main.go
