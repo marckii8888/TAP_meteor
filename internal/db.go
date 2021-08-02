@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"meteor/config"
+	"github.com/marckii8888/TAP_meteor/config"
 )
 
 var (

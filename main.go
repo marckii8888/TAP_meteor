@@ -1,7 +1,7 @@
 package main
 
 import (
-	"meteor/web"
+	"github.com/marckii8888/TAP_meteor/web"
 )
 
 func main() {

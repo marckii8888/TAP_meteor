@@ -2,7 +2,7 @@ package internal
 
 import (
 	"gorm.io/gorm"
-	"meteor/enum"
+	"github.com/marckii8888/TAP_meteor/enum"
 )
 
 type Household struct {

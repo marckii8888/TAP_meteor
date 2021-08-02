@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
-	"meteor/internal"
+	"github.com/marckii8888/TAP_meteor/internal"
 	"net/http"
 	"strconv"
 )

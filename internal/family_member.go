@@ -3,7 +3,7 @@ package internal
 import (
 	"fmt"
 	"gorm.io/gorm"
-	"meteor/enum"
+	"github.com/marckii8888/TAP_meteor/enum"
 	"strconv"
 	"strings"
 	"time"

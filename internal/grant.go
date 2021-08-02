@@ -1,6 +1,6 @@
 package internal
 
-import "meteor/enum"
+import "github.com/marckii8888/TAP_meteor/enum"
 
 type TotalGrantResp struct {
 	StudentEncouragementBonus []GrantResp `json:"student_encouragement_bonus"`

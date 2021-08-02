@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
-	"meteor/config"
-	"meteor/web/handlers"
+	"github.com/marckii8888/TAP_meteor/config"
+	"github.com/marckii8888/TAP_meteor/web/handlers"
 )
 
 type Router struct{
