@@ -4,17 +4,25 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"meteor/config"
 )
 
-const DB_USERNAME = "root"
-const DB_PASSWORD = "root123"
-const DB_NAME = "meteor_assessment"
-const DB_HOST = "127.0.0.1"
-const DB_PORT = "3306"
+var (
+	DB_USERNAME string
+	DB_PASSWORD string
+	DB_NAME  string
+	DB_HOST  string
+	DB_PORT  string
+)
 
 var db *gorm.DB
 
 func InitDB() *gorm.DB {
+	DB_USERNAME = config.Conf.Database.User
+	DB_PASSWORD = config.Conf.Database.Password
+	DB_NAME = config.Conf.Database.Name
+	DB_HOST = config.Conf.Database.Host
+	DB_PORT = config.Conf.Database.Port
 	db = connectDB()
 	return db
 }

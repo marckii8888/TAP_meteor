@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
+	"meteor/config"
 	"meteor/web/handlers"
 )
 
@@ -12,6 +13,9 @@ type Router struct{
 }
 func NewRouter() *Router{
 	router := gin.Default()
+
+	// Read config file
+	config.InitConf()
 
 	helper := handlers.New()
 	householdAPI := router.Group("/household")
@@ -39,12 +43,11 @@ func NewRouter() *Router{
 }
 
 func (r *Router) Run(){
-	port := 8081
-	err := r.Engine.Run(fmt.Sprintf(":%v", port))
+	err := r.Engine.Run(fmt.Sprintf(":%v", config.Conf.Server.Port))
 	if err != nil {
 		log.Fatalf("Failed to start router")
 	}
-	log.Printf("Connected to port %+v", port)
+	log.Printf("Connected to port %+v", config.Conf.Server.Port)
 }
 
 func Run() {
