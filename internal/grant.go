@@ -113,6 +113,7 @@ func isEligibleForFamilyScheme(household Household) (bool, GrantResp){
 	}
 
 	if haveSpouse && haveChild {
+		resp.HouseHold = household
 		return true, resp
 	}
 
