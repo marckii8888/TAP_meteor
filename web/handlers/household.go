@@ -39,6 +39,13 @@ func (helper *Helper)CreateHousehold(c *gin.Context){
 		return
 	}
 
+	// Check if req is valid
+	if !internal.IsReqValid(req) {
+		c.JSON(404, gin.H{
+			"error" : "Invalid household type",
+		})
+		return
+	}
 	for _, household := range req.Households{
 		err := internal.Create(helper.db, household.HousingType)
 		if err != nil {
@@ -72,6 +79,14 @@ func (helper *Helper)AddFamilyMember(c *gin.Context){
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error" : fmt.Sprintf("Error - %+v", err),
+		})
+		return
+	}
+
+	// Check if req is valid
+	if !internal.IsFamilyMemberValid(req) {
+		c.JSON(404, gin.H{
+			"error" : "Invalid fields",
 		})
 		return
 	}

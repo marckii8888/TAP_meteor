@@ -60,3 +60,14 @@ func DeleteHousehold(db *gorm.DB, household *Household, id string) error {
 	return nil
 }
 
+func IsReqValid(req HouseholdReq) bool {
+	// Check if household type is valid enum
+	for _, household := range req.Households{
+		if !enum.HouseholdTypeMap[household.HousingType]{
+			// If enum type does not exists
+			return false
+		}
+	}
+	return true
+}
+

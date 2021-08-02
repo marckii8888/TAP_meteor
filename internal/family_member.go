@@ -94,3 +94,10 @@ func DeleteFamilyMemberFromHousehold(db *gorm.DB, member *FamilyMember, id strin
 	}
 	return nil
 }
+
+func IsFamilyMemberValid(req *FamilyMember) bool {
+	if !enum.FamilyMemberGenderMap[req.Gender] { return false }
+	if !enum.FamilyMemberMaritalStatusMap[req.MaritalStatus] { return false }
+	if !enum.FamilyMemberOccupationTypeMap[req.OccupationType] { return false }
+	return true
+}
