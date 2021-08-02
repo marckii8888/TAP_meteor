@@ -30,6 +30,7 @@ func isDOBValid(dob string) bool {
 func isMaritalStatusValid(member *FamilyMember) bool {
 	if member.MaritalStatus == enum.Married {
 		if member.Spouse == "" { return false }
+		return true
 	}
 	// If not married, should not have spouse
 	if member.Spouse != "" { return false }
