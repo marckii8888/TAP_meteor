@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS testDB;
+
+CREATE DATABASE testDB;
+
 DROP DATABASE IF EXISTS meteor_assessment;
 
 CREATE DATABASE meteor_assessment;
